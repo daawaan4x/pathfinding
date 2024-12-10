@@ -1,2 +1,2 @@
 # pathfinding
-🗺️ visualize pathfinding on custom mazes | made with nuxt.js 🔰
+🗺️ visualize pathfinding on custom mazes | made with sveltekit 💼
