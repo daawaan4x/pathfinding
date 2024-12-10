@@ -1,4 +1,5 @@
 # pathfinding
+
 🗺️ visualize pathfinding on custom mazes | made with sveltekit 💼
 
 # create-svelte
