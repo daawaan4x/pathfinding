@@ -1,0 +1,19 @@
+version: "3.8"
+name: pathfinding
+
+services:
+  postgres-pathfinding:
+    image: postgres:15.6
+    command: postgres -c 'log_statement=all'
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=pathfinding
+    ports:
+      - 5432:5432
+    volumes:
+      - "pathfinding_postgres_data:/var/lib/postgresql/data"
+
+volumes:
+  pathfinding_postgres_data:
