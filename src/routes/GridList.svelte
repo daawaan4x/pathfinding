@@ -32,12 +32,15 @@
 	}
 
 	const refreshQuery = debounce(() => {
-		client.invalidateQueries({ queryKey: ["grids"] });
+		void client.invalidateQueries({ queryKey: ["grids"] });
 	}, 200);
 
 	$effect(() => {
+		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 		search;
+		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 		current_page;
+		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 		current_page_size;
 		refreshQuery();
 	});
