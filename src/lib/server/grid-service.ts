@@ -106,16 +106,22 @@ export const DeleteGridSchema = z.object({
 export type DeleteGridDto = z.input<typeof DeleteGridSchema>;
 
 /** Schema for the returned record of many grids */
-export const GridListSchema = z
-	.object({
-		id: z.string().uuid(),
-		name: z.string(),
-		tags: z.string().array(),
-		size: z.number(),
-		created_at: z.date(),
-		updated_at: z.date(),
-	})
-	.array();
+export const GridListSchema = z.object({
+	page: z.number(),
+	page_size: z.number(),
+	page_last: z.number(),
+	count: z.number(),
+	data: z
+		.object({
+			id: z.string().uuid(),
+			name: z.string(),
+			tags: z.string().array(),
+			size: z.number(),
+			created_at: z.date(),
+			updated_at: z.date(),
+		})
+		.array(),
+});
 
 /** Type for the returned record of many grids */
 export type GridList = z.output<typeof GridListSchema>;
@@ -154,17 +160,36 @@ export class GridService {
 		const { page, page_size, name, size } = params;
 		const tags = [...new Set(params.tags)];
 
-		const where_name = name ? sql` AND "name" LIKE ${"%" + name + "%"}` : sql``;
-		const where_size = size ? sql` AND ${size[0]} <= "size" AND "size" <= ${size[1]}` : sql``;
-		const where_tags = tags ? sql` AND "tags" @> ${tags}` : sql``;
+		const where_name = name ? sql` OR "name" LIKE ${"%" + name + "%"}` : sql``;
+		const where_size = size ? sql` OR ${size[0]} <= "size" AND "size" <= ${size[1]}` : sql``;
+		const where_tags = tags ? sql` OR ARRAY_TO_STRING("tags", ',') LIKE  ${"%" + tags.join(",") + "%"}` : sql``;
+		const where = name || size || tags ? sql`WHERE FALSE${where_name}${where_size}${where_tags}` : sql``;
 
-		const result: GridList = await sql`
-			SELECT ${sql(GridListSchema.element.keyof().options)} 
-			FROM "grids" 
-			WHERE TRUE${where_name}${where_size}${where_tags}
-			LIMIT ${page_size}
-			OFFSET ${(page - 1) * page_size}
-		`;
+		const [data, count] = await sql.begin(async (sql) => {
+			const data: GridList["data"] = await sql`
+				SELECT ${sql(GridListSchema.shape.data.element.keyof().options)} 
+				FROM "grids" 
+				${where}
+				LIMIT ${page_size}
+				OFFSET ${(page - 1) * page_size}
+			`;
+
+			const count: [{ count: number }] = await sql`
+				SELECT COUNT(id)
+				FROM "grids"
+				${where}
+			`;
+
+			return [data, count[0].count];
+		});
+
+		const result: GridList = {
+			data,
+			count,
+			page,
+			page_size,
+			page_last: Math.ceil(count / page_size),
+		};
 
 		return result;
 	}

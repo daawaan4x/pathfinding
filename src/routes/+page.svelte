@@ -1,2 +1,42 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<script lang="ts">
+	import { Input } from "$lib/shadcn/components/ui/input";
+	import { Search } from "lucide-svelte";
+	import GridList from "./GridList.svelte";
+
+	let search = $state("");
+</script>
+
+<main class="relative flex min-h-screen flex-col pb-16">
+	<section class="relative flex flex-col items-center justify-start overflow-hidden pt-36">
+		<div class="relative flex flex-col items-center text-center">
+			<h1
+				class="flex flex-row gap-3 bg-gradient-to-b from-black/70 to-black bg-clip-text pb-5 pt-3 text-8xl font-extrabold leading-none tracking-tight text-transparent">
+				Pathfinding
+			</h1>
+			<p class="subheading text-base tracking-tight text-gray-500">visualize search algorithms on custom mazes</p>
+		</div>
+	</section>
+
+	<section class="relative my-8 flex flex-col items-center justify-start">
+		<div class="relative w-[48rem]">
+			<Search class="absolute left-5 top-[50%] h-5 w-5 translate-y-[-50%] text-muted-foreground" />
+			<Input class="rounded-full p-6 pl-12" type="search" placeholder="Search by name or tag" bind:value={search} />
+		</div>
+	</section>
+
+	<GridList bind:search />
+</main>
+
+<footer class="relative flex flex-col border-t border-gray-200 py-8">
+	<section class="text-center text-xs text-gray-400">
+		© {new Date().getFullYear()} Theone Eclarin. All rights reserved.
+	</section>
+</footer>
+
+<style>
+	@import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap");
+
+	.subheading {
+		font-family: "Roboto Mono";
+	}
+</style>
