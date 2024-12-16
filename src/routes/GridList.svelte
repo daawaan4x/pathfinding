@@ -5,10 +5,10 @@
 	import * as Table from "$lib/shadcn/components/ui/table";
 	import { debounce } from "$lib/utils/debounce";
 	import { createMutation, createQuery, useQueryClient } from "@tanstack/svelte-query";
-	import { Trash } from 'lucide-svelte';
-	import Button from '$lib/shadcn/components/ui/button/button.svelte';
-	import GridDelete from './GridDelete.svelte';
-	import { toast } from 'svelte-sonner';
+	import { Trash } from "lucide-svelte";
+	import Button from "$lib/shadcn/components/ui/button/button.svelte";
+	import GridDelete from "./GridDelete.svelte";
+	import { toast } from "svelte-sonner";
 
 	let { search = $bindable() }: { search: string } = $props();
 	let current_page = $state(1);
@@ -25,7 +25,7 @@
 				const response = await fetch(url);
 				const json = (await response.json()) as GridList;
 				return json;
-			}
+			},
 		},
 		client,
 	);
@@ -42,13 +42,13 @@
 				void client.invalidateQueries({ queryKey: ["grids"] });
 			},
 			onError(error) {
-				toast.error(error.name, { description: error.message })
+				toast.error(error.name, { description: error.message });
 			},
 			onSuccess() {
-				toast.success("Grid has been deleted.")
-			}
-		}, 
-		client
+				toast.success("Grid has been deleted.");
+			},
+		},
+		client,
 	);
 
 	// svelte-ignore non_reactive_update
@@ -111,7 +111,7 @@
 							<Table.Cell>
 								<GridDelete identifier={grid.name} ondelete={() => $gridsDelete.mutateAsync(grid.id)}>
 									<Button class="h-6 w-6 p-0" variant="outline">
-										<Trash size=16 class="text-muted-foreground"/>
+										<Trash size="16" class="text-muted-foreground" />
 									</Button>
 								</GridDelete>
 							</Table.Cell>

@@ -11,8 +11,8 @@
 	import * as Tooltip from "$lib/shadcn/components/ui/tooltip";
 	import Button from "$lib/shadcn/components/ui/button/button.svelte";
 	import { goto } from "$app/navigation";
-	import { onMount } from 'svelte';
-	import { toast } from 'svelte-sonner';
+	import { onMount } from "svelte";
+	import { toast } from "svelte-sonner";
 
 	let { data }: { data: PageData } = $props();
 	let pointer: PointerType | undefined = $state("pen");
@@ -38,36 +38,36 @@
 				if (!$query.data) return;
 
 				const url = `http://localhost:5173/api/grids/${data.id}`;
-				const response = await fetch(url, { 
+				const response = await fetch(url, {
 					method: "PATCH",
 					body: JSON.stringify({
 						size: $query.data.size,
-						data: $query.data.data
-					})
+						data: $query.data.data,
+					}),
 				});
 				const json = (await response.json()) as GridRecord;
 				return json;
 			},
 			onError(error) {
 				toast.error(error.name, {
-					description: error.message
-				})
+					description: error.message,
+				});
 			},
 			onSuccess() {
-				toast.success("Grid has been updated.")
-			}
-		}, 
-		client
+				toast.success("Grid has been updated.");
+			},
+		},
+		client,
 	);
 
 	onMount(() => {
 		void $query.refetch();
-	})
+	});
 </script>
 
-<div class="relative min-h-screen flex flex-col">
+<div class="relative flex min-h-screen flex-col">
 	<header class="relative flex justify-center pt-8">
-		<Button class="fixed top-4 left-4" variant="outline" on:click={() => goto("http://localhost:5173/")}>
+		<Button class="fixed left-4 top-4" variant="outline" on:click={() => goto("http://localhost:5173/")}>
 			<ArrowLeft size="20px" />
 			<div>Back</div>
 		</Button>
@@ -79,7 +79,7 @@
 	</header>
 
 	<main class="relative flex flex-1 flex-row items-center justify-center space-x-3">
-		<section class="relative h-[600px] space-y-1 flex flex-col">
+		<section class="relative flex h-[600px] flex-col space-y-1">
 			{#if $query.data}
 				{#each $query.data.tags as tag}
 					<div class="relative flex justify-end">

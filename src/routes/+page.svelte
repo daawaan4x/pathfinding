@@ -4,10 +4,10 @@
 	import GridList from "./GridList.svelte";
 	import Button from "$lib/shadcn/components/ui/button/button.svelte";
 	import * as Tooltip from "$lib/shadcn/components/ui/tooltip";
-	import GridCreate from './GridCreate.svelte';
-	import { createMutation, useQueryClient } from '@tanstack/svelte-query';
-	import type { CreateGridDto, GridRecord } from '$lib/types/grid-service';
-	import { toast } from 'svelte-sonner';
+	import GridCreate from "./GridCreate.svelte";
+	import { createMutation, useQueryClient } from "@tanstack/svelte-query";
+	import type { CreateGridDto, GridRecord } from "$lib/types/grid-service";
+	import { toast } from "svelte-sonner";
 
 	let search = $state("");
 
@@ -16,26 +16,26 @@
 		{
 			mutationFn: async (data: CreateGridDto) => {
 				const url = `http://localhost:5173/api/grids`;
-				const response = await fetch(url, { 
-					method: "POST", 
-					body: JSON.stringify(data)
+				const response = await fetch(url, {
+					method: "POST",
+					body: JSON.stringify(data),
 				});
 				const json = (await response.json()) as GridRecord;
 				return json;
 			},
 			onMutate() {
-				void client.invalidateQueries({ queryKey: ["grids"] })
+				void client.invalidateQueries({ queryKey: ["grids"] });
 			},
 			onError(error) {
 				toast.error(error.name, {
-					description: error.message
-				})
+					description: error.message,
+				});
 			},
 			onSuccess() {
-				toast.success("Grid has been added.")
-			}
-		}, 
-		client
+				toast.success("Grid has been added.");
+			},
+		},
+		client,
 	);
 </script>
 
@@ -50,7 +50,7 @@
 		</div>
 	</section>
 
-	<section class="relative my-8 flex flex-row space-x-3 items-center justify-center">
+	<section class="relative my-8 flex flex-row items-center justify-center space-x-3">
 		<div class="relative w-[48rem]">
 			<Search class="absolute left-5 top-[50%] h-5 w-5 translate-y-[-50%] text-muted-foreground" />
 			<Input class="rounded-full p-6 pl-12" type="search" placeholder="Search by name or tag" bind:value={search} />
@@ -59,7 +59,7 @@
 			<Tooltip.Trigger>
 				<!-- eslint-disable-next-line @typescript-eslint/no-unsafe-argument -->
 				<GridCreate oncreate={(data) => $gridsCreate.mutateAsync(data)}>
-					<Button class="rounded-full h-12 w-12 p-0">
+					<Button class="h-12 w-12 rounded-full p-0">
 						<Plus />
 					</Button>
 				</GridCreate>

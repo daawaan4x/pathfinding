@@ -31,7 +31,7 @@
 		// Edit Grid Data on click and hold
 		canvas.addEventListener("click", () => editPointedCell());
 		canvas.addEventListener("mousemove", () => {
-			if (mousedown) editPointedCell()
+			if (mousedown) editPointedCell();
 		});
 
 		requestAnimationFrame(function callback() {

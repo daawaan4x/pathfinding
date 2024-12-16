@@ -2,7 +2,7 @@
 	import { QueryClient, QueryClientProvider } from "@tanstack/svelte-query";
 	import "../app.css";
 	import { browser } from "$app/environment";
-	import { Toaster } from '$lib/shadcn/components/ui/sonner';
+	import { Toaster } from "$lib/shadcn/components/ui/sonner";
 
 	const queryClient = new QueryClient({
 		defaultOptions: {
@@ -17,6 +17,6 @@
 	<slot></slot>
 </QueryClientProvider>
 
-<Toaster/>
+<Toaster />
 
 <style></style>
