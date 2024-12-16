@@ -1,4 +1,5 @@
-import { DeleteGridSchema, GridService, ReadOneGridSchema, UpdateGridSchema } from "$lib/server/grid-service";
+import { GridService } from "$lib/server/grid-service";
+import { DeleteGridSchema, ReadOneGridSchema, UpdateGridSchema } from "$lib/types/grid-service";
 import { json, type RequestEvent } from "@sveltejs/kit";
 
 /** GET a grid and its data from the server */
@@ -17,7 +18,7 @@ export async function PATCH(event: RequestEvent) {
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		data: await event.request.json(),
 	});
-	const result = await service.readOne(dto);
+	const result = await service.update(dto);
 	return json(result);
 }
 

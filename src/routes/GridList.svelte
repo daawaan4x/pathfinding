@@ -1,10 +1,14 @@
 <script lang="ts">
-	import type { GridList } from "$lib/server/grid-service";
+	import type { GridList, GridRecord } from "$lib/types/grid-service";
 	import { Badge } from "$lib/shadcn/components/ui/badge";
 	import * as Pagination from "$lib/shadcn/components/ui/pagination";
 	import * as Table from "$lib/shadcn/components/ui/table";
 	import { debounce } from "$lib/utils/debounce";
-	import { createQuery, useQueryClient } from "@tanstack/svelte-query";
+	import { createMutation, createQuery, useQueryClient } from "@tanstack/svelte-query";
+	import { Trash } from 'lucide-svelte';
+	import Button from '$lib/shadcn/components/ui/button/button.svelte';
+	import GridDelete from './GridDelete.svelte';
+	import { toast } from 'svelte-sonner';
 
 	let { search = $bindable() }: { search: string } = $props();
 	let current_page = $state(1);
@@ -21,9 +25,30 @@
 				const response = await fetch(url);
 				const json = (await response.json()) as GridList;
 				return json;
-			},
+			}
 		},
 		client,
+	);
+
+	const gridsDelete = createMutation(
+		{
+			mutationFn: async (id: string) => {
+				const url = `http://localhost:5173/api/grids/${id}`;
+				const response = await fetch(url, { method: "DELETE" });
+				const json = (await response.json()) as GridRecord;
+				return json;
+			},
+			onMutate() {
+				void client.invalidateQueries({ queryKey: ["grids"] });
+			},
+			onError(error) {
+				toast.error(error.name, { description: error.message })
+			},
+			onSuccess() {
+				toast.success("Grid has been deleted.")
+			}
+		}, 
+		client
 	);
 
 	// svelte-ignore non_reactive_update
@@ -31,7 +56,7 @@
 		current_page = page;
 	}
 
-	const refreshQuery = debounce(() => {
+	const debouncedRefreshQuery = debounce(() => {
 		void client.invalidateQueries({ queryKey: ["grids"] });
 	}, 200);
 
@@ -42,7 +67,7 @@
 		current_page;
 		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 		current_page_size;
-		refreshQuery();
+		debouncedRefreshQuery();
 	});
 
 	function viewGridRecord(id: string) {
@@ -71,13 +96,24 @@
 				</Table.Header>
 				<Table.Body>
 					{#each $gridsQuery.data.data as grid (grid.id)}
-						<Table.Row class="cursor-pointer" on:click={() => viewGridRecord(grid.id)}>
-							<Table.Cell>{grid.name}</Table.Cell>
-							<Table.Cell class="text-center">{grid.size}×{grid.size}</Table.Cell>
-							<Table.Cell>
+						<Table.Row>
+							<Table.Cell class="cursor-pointer" on:click={() => viewGridRecord(grid.id)}>
+								{grid.name}
+							</Table.Cell>
+							<Table.Cell class="cursor-pointer text-center" on:click={() => viewGridRecord(grid.id)}>
+								{grid.size}×{grid.size}
+							</Table.Cell>
+							<Table.Cell class="cursor-pointer" on:click={() => viewGridRecord(grid.id)}>
 								{#each grid.tags as tag}
 									<Badge class="mr-1">{tag}</Badge>
 								{/each}
+							</Table.Cell>
+							<Table.Cell>
+								<GridDelete identifier={grid.name} ondelete={() => $gridsDelete.mutateAsync(grid.id)}>
+									<Button class="h-6 w-6 p-0" variant="outline">
+										<Trash size=16 class="text-muted-foreground"/>
+									</Button>
+								</GridDelete>
 							</Table.Cell>
 						</Table.Row>
 					{/each}

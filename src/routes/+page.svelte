@@ -1,9 +1,42 @@
 <script lang="ts">
 	import { Input } from "$lib/shadcn/components/ui/input";
-	import { Search } from "lucide-svelte";
+	import { Plus, Search } from "lucide-svelte";
 	import GridList from "./GridList.svelte";
+	import Button from "$lib/shadcn/components/ui/button/button.svelte";
+	import * as Tooltip from "$lib/shadcn/components/ui/tooltip";
+	import GridCreate from './GridCreate.svelte';
+	import { createMutation, useQueryClient } from '@tanstack/svelte-query';
+	import type { CreateGridDto, GridRecord } from '$lib/types/grid-service';
+	import { toast } from 'svelte-sonner';
 
 	let search = $state("");
+
+	const client = useQueryClient();
+	const gridsCreate = createMutation(
+		{
+			mutationFn: async (data: CreateGridDto) => {
+				const url = `http://localhost:5173/api/grids`;
+				const response = await fetch(url, { 
+					method: "POST", 
+					body: JSON.stringify(data)
+				});
+				const json = (await response.json()) as GridRecord;
+				return json;
+			},
+			onMutate() {
+				void client.invalidateQueries({ queryKey: ["grids"] })
+			},
+			onError(error) {
+				toast.error(error.name, {
+					description: error.message
+				})
+			},
+			onSuccess() {
+				toast.success("Grid has been added.")
+			}
+		}, 
+		client
+	);
 </script>
 
 <main class="relative flex min-h-screen flex-col pb-16">
@@ -17,11 +50,22 @@
 		</div>
 	</section>
 
-	<section class="relative my-8 flex flex-col items-center justify-start">
+	<section class="relative my-8 flex flex-row space-x-3 items-center justify-center">
 		<div class="relative w-[48rem]">
 			<Search class="absolute left-5 top-[50%] h-5 w-5 translate-y-[-50%] text-muted-foreground" />
 			<Input class="rounded-full p-6 pl-12" type="search" placeholder="Search by name or tag" bind:value={search} />
 		</div>
+		<Tooltip.Root>
+			<Tooltip.Trigger>
+				<!-- eslint-disable-next-line @typescript-eslint/no-unsafe-argument -->
+				<GridCreate oncreate={(data) => $gridsCreate.mutateAsync(data)}>
+					<Button class="rounded-full h-12 w-12 p-0">
+						<Plus />
+					</Button>
+				</GridCreate>
+			</Tooltip.Trigger>
+			<Tooltip.Content>Add Grid</Tooltip.Content>
+		</Tooltip.Root>
 	</section>
 
 	<GridList bind:search />
