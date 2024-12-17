@@ -14,8 +14,8 @@ export const CreateGridSchema = z
 	.object({
 		name: z.string().max(30),
 		tags: z.string().max(30).array().max(10).default([]),
-		size: z.number().int().min(1).max(30),
-		data: GridNodeEnum.array().max(900),
+		size: z.number().int().min(5).max(30),
+		data: GridNodeEnum.array().min(25).max(900),
 	})
 	.superRefine((value, ctx) => {
 		if (value.size ** 2 != value.data.length) {
@@ -67,8 +67,8 @@ export const UpdateGridSchema = z
 			.object({
 				name: z.string().max(30),
 				tags: z.string().max(30).array().max(10),
-				size: z.number().int().min(1).max(30),
-				data: GridNodeEnum.array().max(900),
+				size: z.number().int().min(5).max(30),
+				data: GridNodeEnum.array().min(25).max(900),
 			})
 			.partial(),
 	})
