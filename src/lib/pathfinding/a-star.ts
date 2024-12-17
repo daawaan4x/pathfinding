@@ -88,7 +88,7 @@ export class AStar {
 			return;
 		}
 
-		// Move best guess from open list to closed set
+		// Move best guess from open list to closed set (smallest accumulated and heuristic cost)
 		const current = this.openlist.popmin()!;
 		this.lastnode = current;
 		this.closedset.set(this.serialize(current.point), current.point);
@@ -115,7 +115,9 @@ export class AStar {
 				h,
 			};
 
-			// Check if node is already listed, skip if its a worse path
+			// Check if node is already listed:
+			// - add if not yet
+			// - update accumulated cost if new discovered path has lower cost
 			const node = this.openlist.find((node) => this.equals(node.point, neighbor_point));
 			if (!node) this.openlist.insert(neighbor_node);
 			else if (g < node.g) {
