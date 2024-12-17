@@ -1,3 +1,4 @@
+import type { AStar } from "$lib/pathfinding/a-star";
 import { GridNode, type GridRecord } from "$lib/types/grid-service";
 
 export type PointerType = "pen" | "eraser";
@@ -46,6 +47,8 @@ export function mouseToCell({
  * Draws the grid lines
  */
 export function drawGridLines({ ctx, size }: { ctx: CanvasRenderingContext2D; size: number }) {
+	ctx.save();
+
 	const canvas_size = ctx.canvas.clientWidth;
 	const cell_size = canvas_size / size;
 
@@ -55,36 +58,43 @@ export function drawGridLines({ ctx, size }: { ctx: CanvasRenderingContext2D; si
 	ctx.beginPath();
 
 	// draw vertical lines left-to-right
-	for (let x = cell_size; x < canvas_size; x += cell_size) {
+	for (let x = cell_size; x < canvas_size - 1; x += cell_size) {
 		ctx.moveTo(x, 0);
 		ctx.lineTo(x, canvas_size);
 	}
 
 	// draw horizontal lines top-to-bottom
-	for (let y = cell_size; y < canvas_size; y += cell_size) {
+	for (let y = cell_size; y < canvas_size - 1; y += cell_size) {
 		ctx.moveTo(0, y);
 		ctx.lineTo(canvas_size, y);
 	}
 
 	ctx.stroke();
+
+	ctx.restore();
 }
 
 /**
  * Draws the grid cells
  */
 export function drawGridCells({ ctx, data, size }: { ctx: CanvasRenderingContext2D; data: GridNode[]; size: number }) {
+	ctx.save();
+
 	const canvas_size = ctx.canvas.clientWidth;
 	const cell_size = canvas_size / size;
+	const inset = cell_size * 0.25;
 
 	for (let xi = 0; xi < size; xi++) {
 		for (let yi = 0; yi < size; yi++) {
 			const node = data[xi + yi * size];
 			if (node == GridNode.block) {
 				ctx.fillStyle = "rgb(208, 208, 211)";
-				ctx.fillRect(xi * cell_size, yi * cell_size, cell_size, cell_size);
+				ctx.fillRect(xi * cell_size + inset, yi * cell_size + inset, cell_size - inset * 2, cell_size - inset * 2);
 			}
 		}
 	}
+
+	ctx.restore();
 }
 
 /**
@@ -101,6 +111,8 @@ export function drawPointer({
 	pointer?: PointerType;
 	mousexy: [number, number];
 }) {
+	ctx.save();
+
 	const canvas_size = ctx.canvas.clientWidth;
 	const cell_size = canvas_size / grid_size;
 	const [xi, yi] = mouseToCell({ canvas_size, grid_size, mousexy });
@@ -131,6 +143,73 @@ export function drawPointer({
 		ctx.lineTo(x + cell_size * 0.75, y + cell_size * 0.25);
 		ctx.stroke();
 	}
+
+	ctx.restore();
+}
+
+export function drawMarkers({ ctx, grid_size }: { ctx: CanvasRenderingContext2D; grid_size: number }) {
+	ctx.save();
+
+	const canvas_size = ctx.canvas.clientWidth;
+	const cell_size = canvas_size / grid_size;
+	ctx.fillStyle = "rgb(60, 60, 62)";
+	ctx.font = `bold ${cell_size / 2}px 'Arial'`;
+	ctx.textAlign = "center";
+	ctx.textBaseline = "middle";
+
+	// Draw Start
+	ctx.fillText("S", cell_size * 0.5, cell_size * 0.5);
+
+	// Draw Finish
+	ctx.fillText("F", canvas_size - cell_size * 0.5, canvas_size - cell_size * 0.5);
+
+	ctx.restore();
+}
+
+export function drawAStar({
+	ctx,
+	grid_size,
+	astar,
+}: {
+	ctx: CanvasRenderingContext2D;
+	grid_size: number;
+	astar: AStar;
+}) {
+	ctx.save();
+	const canvas_size = ctx.canvas.clientWidth;
+	const cell_size = canvas_size / grid_size;
+
+	// Open List
+	ctx.fillStyle = "rgba(254, 240, 138, 0.25)";
+	astar.openlist.preorder(({ point }) => {
+		ctx.fillRect(point[0] * cell_size, point[1] * cell_size, cell_size, cell_size);
+	});
+
+	// Closed Set
+	ctx.fillStyle = "rgba(165, 243, 252, 0.25)";
+	for (const [x, y] of astar.closedset.values()) {
+		ctx.fillRect(x * cell_size, y * cell_size, cell_size, cell_size);
+	}
+
+	path: {
+		ctx.strokeStyle = "rgb(254, 240, 138)";
+		if (astar.status == "no-solution") ctx.strokeStyle = "rgb(252, 165, 165)";
+		if (astar.status == "finished") ctx.strokeStyle = "rgb(134, 239, 172)";
+
+		ctx.lineWidth = cell_size * 0.2;
+		ctx.lineCap = "round";
+		const path = astar.currentpath();
+		if (path.length == 0) break path;
+
+		ctx.beginPath();
+		ctx.moveTo(path[0][0] * cell_size + cell_size / 2, path[0][1] * cell_size + cell_size / 2);
+		for (let i = 1; i < path.length; i++) {
+			ctx.lineTo(path[i][0] * cell_size + cell_size / 2, path[i][1] * cell_size + cell_size / 2);
+		}
+		ctx.stroke();
+	}
+
+	ctx.restore();
 }
 
 /**
@@ -141,14 +220,22 @@ export function drawGrid({
 	grid,
 	pointer,
 	mousexy,
+	astar,
 }: {
 	ctx: CanvasRenderingContext2D;
 	grid: GridRecord;
 	pointer?: PointerType;
 	mousexy?: [number, number];
+	astar?: AStar;
 }) {
+	ctx.save();
+
 	drawGridCells({ ctx, data: grid.data, size: grid.size });
 	drawGridLines({ ctx, size: grid.size });
+
+	drawMarkers({ ctx, grid_size: grid.size });
+
+	if (astar) drawAStar({ ctx, grid_size: grid.size, astar });
 
 	if (mousexy)
 		drawPointer({
@@ -157,4 +244,6 @@ export function drawGrid({
 			pointer,
 			mousexy,
 		});
+
+	ctx.restore();
 }

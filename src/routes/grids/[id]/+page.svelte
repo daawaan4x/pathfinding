@@ -14,9 +14,12 @@
 	import { onMount } from "svelte";
 	import { toast } from "svelte-sonner";
 	import { tryJSON } from "$lib/utils/try-json";
+	import { AStar } from "$lib/pathfinding/a-star";
 
 	let { data }: { data: PageData } = $props();
 	let pointer: PointerType | undefined = $state("pen");
+
+	let astar: AStar | undefined = $state(undefined);
 
 	const client = useQueryClient();
 	const query = createQuery(
@@ -93,6 +96,21 @@
 	onMount(() => {
 		void $query.refetch();
 	});
+
+	function runAlgorithm() {
+		const fps = 24;
+		const grid = $query.data;
+		if (!grid) return;
+
+		astar = new AStar(grid.size, grid.data);
+		const id = setInterval(function interval() {
+			if (!astar) return clearInterval(id);
+			if (astar.status == "finished") toast.success("Finished Simulation.");
+			if (astar.status == "no-solution") toast.error("No Solution Found.");
+			if (astar.status == "finished" || astar.status == "no-solution") return clearInterval(id);
+			astar.step();
+		}, 1000 / fps);
+	}
 </script>
 
 <div class="relative flex min-h-screen flex-col">
@@ -135,7 +153,7 @@
 			{/if}
 		</section>
 
-		<GridCanvas bind:pointer bind:data={$query.data} />
+		<GridCanvas bind:pointer bind:data={$query.data} bind:astar />
 
 		<section class="space-y-12">
 			<ToggleGroup type="single" class="flex-col rounded-md border p-1" bind:value={pointer}>
@@ -170,7 +188,7 @@
 			</ToggleGroup>
 
 			<div class="flex-col rounded-md border p-1">
-				<Button class="px-[6px]">
+				<Button class="px-[6px]" on:click={runAlgorithm}>
 					<Tooltip.Root>
 						<Tooltip.Trigger>
 							<Play />

@@ -58,7 +58,11 @@
 				class="flex flex-row gap-3 bg-gradient-to-b from-black/70 to-black bg-clip-text pb-5 pt-3 text-8xl font-extrabold leading-none tracking-tight text-transparent">
 				Pathfinding
 			</h1>
-			<p class="subheading text-base tracking-tight text-gray-500">visualize search algorithms on custom mazes</p>
+			<p class="subheading text-base tracking-tight text-gray-500">
+				visualize the
+				<span class="font-bold italic">A*</span>
+				algorithm on custom mazes
+			</p>
 		</div>
 	</section>
 

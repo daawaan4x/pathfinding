@@ -1,13 +1,16 @@
 <script lang="ts">
+	import type { AStar } from "$lib/pathfinding/a-star";
 	import { GridNode, type GridRecord } from "$lib/types/grid-service";
 	import { drawGrid, mouseToCell, rescaleCanvas, type PointerType } from "./GridCanvasHelpers";
 
 	let {
 		data = $bindable(undefined),
 		pointer = $bindable(undefined),
+		astar = $bindable(undefined),
 	}: {
 		data?: GridRecord;
 		pointer?: PointerType;
+		astar?: AStar;
 	} = $props();
 
 	let mousexy: [number, number] | undefined = $state(undefined);
@@ -55,12 +58,14 @@
 	}
 
 	function draw(ctx: CanvasRenderingContext2D) {
+		ctx.save();
 		ctx.fillStyle = "white";
 		ctx.fillRect(0, 0, ctx.canvas.clientWidth, ctx.canvas.clientHeight);
 
 		if (!data) return;
 
-		drawGrid({ ctx, grid: data, pointer, mousexy });
+		drawGrid({ ctx, grid: data, pointer, mousexy, astar });
+		ctx.restore();
 	}
 </script>
 
