@@ -11,12 +11,18 @@ importers:
       '@tanstack/svelte-query':
         specifier: ^5.62.7
         version: 5.62.7(svelte@5.12.0)
+      '@types/luxon':
+        specifier: ^3.4.2
+        version: 3.4.2
       dotenv:
         specifier: ^16.4.7
         version: 16.4.7
       lucide-svelte:
         specifier: ^0.468.0
         version: 0.468.0(svelte@5.12.0)
+      luxon:
+        specifier: ^3.5.0
+        version: 3.5.0
       postgres:
         specifier: ^3.4.5
         version: 3.4.5
@@ -886,6 +892,9 @@ packages:
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
 
+  '@types/luxon@3.4.2':
+    resolution: {integrity: sha512-TifLZlFudklWlMBfhubvgqTXRzLDI5pCbGa4P8a3wPyUQSW+1xQ5eDsreP9DWHX3tjq1ke96uYG/nwundroWcA==}
+
   '@types/node@20.14.8':
     resolution: {integrity: sha512-DO+2/jZinXfROG7j7WKFn/3C6nFwxy2lLpgLjEXJz+0XKphZlTLJ14mo8Vfg8X5BWN6XjyESXq+LcYdT7tR3bA==}
 
@@ -1647,6 +1656,10 @@ packages:
     resolution: {integrity: sha512-n0ecAFtCY5LEeL+PJ1Xj4n3c2gzj8tMpak0KMGnvoSJEjCsCnRB0mekBtJZAo7beyynW9Qj5Um1KfMBAeTNplw==}
     peerDependencies:
       svelte: ^3 || ^4 || ^5.0.0-next.42
+
+  luxon@3.5.0:
+    resolution: {integrity: sha512-rh+Zjr6DNfUYR3bPwJEnuwDdqMbxZW7LOQfUN4B54+Cl+0o5zaU9RJ6bcidfDtC1cWCZXQ+nvX8bf6bAji37QQ==}
+    engines: {node: '>=12'}
 
   magic-string@0.30.10:
     resolution: {integrity: sha512-iIRwTIf0QKV3UAnYK4PU8uiEc4SRh5jX0mwpIwETPpHdhVM4f53RSwS/vXvN1JhGX+Cs7B8qIq3d6AH49O5fAQ==}
@@ -2994,6 +3007,8 @@ snapshots:
 
   '@types/json-schema@7.0.15': {}
 
+  '@types/luxon@3.4.2': {}
+
   '@types/node@20.14.8':
     dependencies:
       undici-types: 5.26.5
@@ -3778,6 +3793,8 @@ snapshots:
   lucide-svelte@0.468.0(svelte@5.12.0):
     dependencies:
       svelte: 5.12.0
+
+  luxon@3.5.0: {}
 
   magic-string@0.30.10:
     dependencies:

@@ -5,7 +5,7 @@
 	import type { PageData } from "./$types";
 	import GridCanvas from "./GridCanvas.svelte";
 	import type { PointerType } from "./GridCanvasHelpers";
-	import type { GridRecord } from "$lib/types/grid-service";
+	import { GridRecordSchema } from "$lib/types/grid-service";
 	import ToggleGroup from "$lib/shadcn/components/ui/toggle-group/toggle-group.svelte";
 	import ToggleGroupItem from "$lib/shadcn/components/ui/toggle-group/toggle-group-item.svelte";
 	import * as Tooltip from "$lib/shadcn/components/ui/tooltip";
@@ -24,10 +24,9 @@
 			queryFn: async () => {
 				const url = `http://localhost:5173/api/grids/${data.id}`;
 				const response = await fetch(url);
-				const json = (await response.json()) as GridRecord;
+				const json = GridRecordSchema.parse(await response.json());
 				return json;
 			},
-			enabled: false,
 		},
 		client,
 	);
@@ -45,7 +44,7 @@
 						data: $query.data.data,
 					}),
 				});
-				const json = (await response.json()) as GridRecord;
+				const json = GridRecordSchema.parse(await response.json());
 				return json;
 			},
 			onError(error) {
@@ -55,6 +54,7 @@
 			},
 			onSuccess() {
 				toast.success("Grid has been updated.");
+				void $query.refetch();
 			},
 		},
 		client,
@@ -79,8 +79,24 @@
 	</header>
 
 	<main class="relative flex flex-1 flex-row items-center justify-center space-x-3">
-		<section class="relative flex h-[600px] flex-col space-y-1">
+		<section class="relative flex flex-col space-y-1">
 			{#if $query.data}
+				<div class="text-right text-sm text-muted-foreground">
+					<div class="font-semibold">Created at:</div>
+					<div class="text-xs">
+						{$query.data.created_at.toLocaleString(undefined, { day: "numeric", month: "short", year: "numeric" })}
+					</div>
+					<div class="text-xs">{$query.data.created_at.toLocaleTimeString()}</div>
+				</div>
+				<br />
+				<div class="text-right text-sm text-muted-foreground">
+					<div class="font-semibold">Updated at:</div>
+					<div class="text-xs">
+						{$query.data.updated_at.toLocaleString(undefined, { day: "numeric", month: "short", year: "numeric" })}
+					</div>
+					<div class="text-xs">{$query.data.updated_at.toLocaleTimeString()}</div>
+				</div>
+				<br />
 				{#each $query.data.tags as tag}
 					<div class="relative flex justify-end">
 						<Badge class="mr-1">{tag}</Badge>

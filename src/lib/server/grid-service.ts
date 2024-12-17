@@ -16,6 +16,7 @@ import {
 	type ReadOneGridDto,
 	type UpdateGridDto,
 } from "$lib/types/grid-service";
+import { shiftFromUTC } from "$lib/utils/shift-from-utc";
 import { sql } from "./sql";
 
 /** Service for performing CRUD on the stored grids in the database */
@@ -59,7 +60,7 @@ export class GridService {
 				${where}
 			`;
 
-			return [data, count[0].count];
+			return [data, Number(count[0].count)];
 		});
 
 		const result: GridList = {
@@ -70,6 +71,7 @@ export class GridService {
 			page_last: Math.ceil(count / page_size),
 		};
 
+		shiftFromUTC(result);
 		return result;
 	}
 
@@ -81,7 +83,7 @@ export class GridService {
 			FROM "grids"
 			WHERE "id" = ${id}
 		`;
-
+		shiftFromUTC(result);
 		return result[0];
 	}
 
@@ -98,21 +100,21 @@ export class GridService {
 			SELECT ARRAY_AGG("tag") as "tags"
 			FROM "tags_cte"
 		`;
-
+		shiftFromUTC(result);
 		return result[0].tags;
 	}
 
 	/** Updates a grid record in the database */
 	async update(dto: UpdateGridDto) {
-		const { id, data: params } = UpdateGridSchema.parse(dto);
-		const columns = Object.keys(params) as (keyof typeof params)[];
+		const { id, data } = UpdateGridSchema.parse(dto);
+		const columns = Object.keys(data) as (keyof typeof data)[];
 		const result: GridRecord[] = await sql`
 			UPDATE grids 
-			SET ${sql(params, ...columns)}
+			SET ${sql({ ...data, updated_at: sql`CURRENT_TIMESTAMP` }, ...columns, "updated_at")}
 			WHERE "id" = ${id}
 			RETURNING ${sql(GridRecordSchema.keyof().options)}
 		`;
-
+		shiftFromUTC(result);
 		return result[0];
 	}
 
@@ -124,7 +126,7 @@ export class GridService {
 			WHERE "id" = ${id}
 			RETURNING ${sql(GridRecordSchema.keyof().options)}
 		`;
-
+		shiftFromUTC(result);
 		return result[0];
 	}
 }

@@ -116,8 +116,8 @@ export const GridListSchema = z.object({
 			name: z.string(),
 			tags: z.string().array(),
 			size: z.number(),
-			created_at: z.date(),
-			updated_at: z.date(),
+			created_at: z.coerce.date(),
+			updated_at: z.coerce.date(),
 		})
 		.array(),
 });
@@ -132,8 +132,8 @@ export const GridRecordSchema = z.object({
 	tags: z.string().array(),
 	size: z.number(),
 	data: GridNodeEnum.array(),
-	created_at: z.date(),
-	updated_at: z.date(),
+	created_at: z.coerce.date(),
+	updated_at: z.coerce.date(),
 });
 
 /** Type for the returned record of one grid */

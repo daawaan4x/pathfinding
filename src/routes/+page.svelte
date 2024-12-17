@@ -23,9 +23,6 @@
 				const json = (await response.json()) as GridRecord;
 				return json;
 			},
-			onMutate() {
-				void client.invalidateQueries({ queryKey: ["grids"] });
-			},
 			onError(error) {
 				toast.error(error.name, {
 					description: error.message,
@@ -33,6 +30,7 @@
 			},
 			onSuccess() {
 				toast.success("Grid has been added.");
+				void client.invalidateQueries({ queryKey: ["grids"] });
 			},
 		},
 		client,

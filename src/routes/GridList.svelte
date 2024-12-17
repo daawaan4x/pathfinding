@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { GridList, GridRecord } from "$lib/types/grid-service";
+	import { GridListSchema, type GridRecord } from "$lib/types/grid-service";
 	import { Badge } from "$lib/shadcn/components/ui/badge";
 	import * as Pagination from "$lib/shadcn/components/ui/pagination";
 	import * as Table from "$lib/shadcn/components/ui/table";
@@ -23,7 +23,7 @@
 				if (search) url += `&name=${search.toLowerCase()}`;
 				if (search) url += `&tags=${search.toLowerCase()}`;
 				const response = await fetch(url);
-				const json = (await response.json()) as GridList;
+				const json = GridListSchema.parse(await response.json());
 				return json;
 			},
 		},
@@ -38,14 +38,12 @@
 				const json = (await response.json()) as GridRecord;
 				return json;
 			},
-			onMutate() {
-				void client.invalidateQueries({ queryKey: ["grids"] });
-			},
 			onError(error) {
 				toast.error(error.name, { description: error.message });
 			},
 			onSuccess() {
 				toast.success("Grid has been deleted.");
+				void client.invalidateQueries({ queryKey: ["grids"] });
 			},
 		},
 		client,
