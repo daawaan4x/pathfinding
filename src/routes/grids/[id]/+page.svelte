@@ -13,6 +13,7 @@
 	import { goto } from "$app/navigation";
 	import { onMount } from "svelte";
 	import { toast } from "svelte-sonner";
+	import { tryJSON } from "$lib/utils/try-json";
 
 	let { data }: { data: PageData } = $props();
 	let pointer: PointerType | undefined = $state("pen");
@@ -24,8 +25,22 @@
 			queryFn: async () => {
 				const url = `http://localhost:5173/api/grids/${data.id}`;
 				const response = await fetch(url);
-				const json = GridRecordSchema.parse(await response.json());
-				return json;
+				const text = await response.text();
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				const json = tryJSON(text);
+
+				if (!response.ok) {
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+					if (json?.error && json?.message) {
+						// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+						throw new Error(`${json.error}: ${json.message}`);
+					} else {
+						throw new Error(text);
+					}
+				}
+
+				const result = GridRecordSchema.parse(json);
+				return result;
 			},
 		},
 		client,
@@ -44,8 +59,23 @@
 						data: $query.data.data,
 					}),
 				});
-				const json = GridRecordSchema.parse(await response.json());
-				return json;
+
+				const text = await response.text();
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				const json = tryJSON(text);
+
+				if (!response.ok) {
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+					if (json?.error && json?.message) {
+						// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+						throw new Error(`${json.error}: ${json.message}`);
+					} else {
+						throw new Error(text);
+					}
+				}
+
+				const result = GridRecordSchema.parse(json);
+				return result;
 			},
 			onError(error) {
 				toast.error(error.name, {

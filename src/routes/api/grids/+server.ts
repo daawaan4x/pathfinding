@@ -24,6 +24,6 @@ export async function GET(event: RequestEvent) {
 export async function POST(event: RequestEvent) {
 	const service = new GridService();
 	const dto = CreateGridSchema.parse(await event.request.json());
-	const result = service.create(dto);
+	const result = await service.create(dto);
 	return json(result);
 }

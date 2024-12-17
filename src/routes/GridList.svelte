@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { GridListSchema, type GridRecord } from "$lib/types/grid-service";
+	import { GridListSchema, GridRecordSchema } from "$lib/types/grid-service";
 	import { Badge } from "$lib/shadcn/components/ui/badge";
 	import * as Pagination from "$lib/shadcn/components/ui/pagination";
 	import * as Table from "$lib/shadcn/components/ui/table";
@@ -9,6 +9,7 @@
 	import Button from "$lib/shadcn/components/ui/button/button.svelte";
 	import GridDelete from "./GridDelete.svelte";
 	import { toast } from "svelte-sonner";
+	import { tryJSON } from "$lib/utils/try-json";
 
 	let { search = $bindable() }: { search: string } = $props();
 	let current_page = $state(1);
@@ -23,8 +24,22 @@
 				if (search) url += `&name=${search.toLowerCase()}`;
 				if (search) url += `&tags=${search.toLowerCase()}`;
 				const response = await fetch(url);
-				const json = GridListSchema.parse(await response.json());
-				return json;
+				const text = await response.text();
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				const json = tryJSON(text);
+
+				if (!response.ok) {
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+					if (json?.error && json?.message) {
+						// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+						throw new Error(`${json.error}: ${json.message}`);
+					} else {
+						throw new Error(text);
+					}
+				}
+
+				const result = GridListSchema.parse(json);
+				return result;
 			},
 		},
 		client,
@@ -35,10 +50,25 @@
 			mutationFn: async (id: string) => {
 				const url = `http://localhost:5173/api/grids/${id}`;
 				const response = await fetch(url, { method: "DELETE" });
-				const json = (await response.json()) as GridRecord;
-				return json;
+				const text = await response.text();
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				const json = tryJSON(text);
+
+				if (!response.ok) {
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+					if (json?.error && json?.message) {
+						// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+						throw new Error(`${json.error}: ${json.message}`);
+					} else {
+						throw new Error(text);
+					}
+				}
+
+				const result = GridRecordSchema.parse(json);
+				return result;
 			},
 			onError(error) {
+				console.log(error);
 				toast.error(error.name, { description: error.message });
 			},
 			onSuccess() {

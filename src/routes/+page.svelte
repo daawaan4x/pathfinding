@@ -6,8 +6,9 @@
 	import * as Tooltip from "$lib/shadcn/components/ui/tooltip";
 	import GridCreate from "./GridCreate.svelte";
 	import { createMutation, useQueryClient } from "@tanstack/svelte-query";
-	import type { CreateGridDto, GridRecord } from "$lib/types/grid-service";
+	import { GridRecordSchema, type CreateGridDto } from "$lib/types/grid-service";
 	import { toast } from "svelte-sonner";
+	import { tryJSON } from "$lib/utils/try-json";
 
 	let search = $state("");
 
@@ -20,13 +21,26 @@
 					method: "POST",
 					body: JSON.stringify(data),
 				});
-				const json = (await response.json()) as GridRecord;
-				return json;
+
+				const text = await response.text();
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				const json = tryJSON(text);
+
+				if (!response.ok) {
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+					if (json?.error && json?.message) {
+						// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+						throw new Error(`${json.error}: ${json.message}`);
+					} else {
+						throw new Error(text);
+					}
+				}
+
+				const result = GridRecordSchema.parse(json);
+				return result;
 			},
 			onError(error) {
-				toast.error(error.name, {
-					description: error.message,
-				});
+				toast.error(error.name, { description: error.message });
 			},
 			onSuccess() {
 				toast.success("Grid has been added.");
