@@ -36,7 +36,7 @@
 
 		if (!tags_temp) return;
 
-		if (tags.length >= 15) return;
+		if (tags.length >= 10) return;
 
 		if (tags.includes(tags_temp)) return;
 
@@ -74,10 +74,10 @@
 				<Label for="size" class="text-right">Size</Label>
 				<Input
 					bind:value={size}
-					min="1"
+					min="5"
 					max="30"
 					required={true}
-					placeholder="Enter from 1-30 size"
+					placeholder="Enter from 5-30 size"
 					type="number"
 					id="size"
 					class="col-span-3" />
@@ -89,7 +89,7 @@
 					max="30"
 					required={true}
 					id="tags"
-					placeholder="Enter up to 15 tags!"
+					placeholder="Enter up to 10 tags!"
 					class="col-span-3"
 					on:keypress={addTag} />
 			</div>
