@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { Eraser, Pen, Play, Save, ArrowLeft } from "lucide-svelte";
+	import { Eraser, Pen, Play, Save, ArrowLeft, Trash } from "lucide-svelte";
 	import { Badge } from "$lib/shadcn/components/ui/badge";
 	import { createMutation, createQuery, useQueryClient } from "@tanstack/svelte-query";
 	import type { PageData } from "./$types";
 	import GridCanvas from "./GridCanvas.svelte";
 	import type { PointerType } from "./GridCanvasHelpers";
-	import { GridRecordSchema } from "$lib/types/grid-service";
+	import { GridNode, GridRecordSchema } from "$lib/types/grid-service";
 	import ToggleGroup from "$lib/shadcn/components/ui/toggle-group/toggle-group.svelte";
 	import ToggleGroupItem from "$lib/shadcn/components/ui/toggle-group/toggle-group-item.svelte";
 	import * as Tooltip from "$lib/shadcn/components/ui/tooltip";
@@ -45,6 +45,7 @@
 				const result = GridRecordSchema.parse(json);
 				return result;
 			},
+			enabled: false,
 		},
 		client,
 	);
@@ -186,6 +187,23 @@
 					</Tooltip.Root>
 				</Button>
 			</ToggleGroup>
+
+			<div class="flex-col rounded-md border p-1">
+				<Button
+					class="px-[6px]"
+					on:click={() => {
+						const grid = $query.data;
+						if (!grid) return;
+						grid.data = new Array<GridNode>(grid.size * grid.size).fill(GridNode.empty);
+					}}>
+					<Tooltip.Root>
+						<Tooltip.Trigger>
+							<Trash />
+						</Tooltip.Trigger>
+						<Tooltip.Content side="right">Clear Grid</Tooltip.Content>
+					</Tooltip.Root>
+				</Button>
+			</div>
 
 			<div class="flex-col rounded-md border p-1">
 				<Button class="px-[6px]" on:click={runAlgorithm}>
