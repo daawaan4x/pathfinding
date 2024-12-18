@@ -1,6 +1,12 @@
 # 🗺️ pathfinding
 
-A **CRUD** application made with _SvelteKit_ for visualizing the *A\** algorithm on customizable mazes. Originally made for my MMSU CS116 & CS131 Project.
+A **CRUD** application made with _SvelteKit_ for visualizing the \*A\*\* algorithm on customizable mazes. Originally made for my MMSU CS116 & CS131 Project.
+
+<div align="center">
+	<img width="560" src="static/home.png"/>
+	<img width="560" src="static/maze.png"/>
+	<img width="560" src="static/maze_solution.png"/>
+</div>
 
 ## Setup
 
