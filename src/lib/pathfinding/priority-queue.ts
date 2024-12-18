@@ -4,6 +4,7 @@ class BinaryNode<T> {
 	public right?: BinaryNode<T>;
 }
 
+/** A Binary-Tree based implementation of a Priority Queue  */
 export class PriorityQueue<T> {
 	private root?: BinaryNode<T>;
 
@@ -11,6 +12,7 @@ export class PriorityQueue<T> {
 		this.comparator = comparator;
 	}
 
+	/** Traverses the tree in a preorder manner */
 	public preorder(callback: (value: T) => unknown) {
 		_preorder(this.root);
 
@@ -22,6 +24,7 @@ export class PriorityQueue<T> {
 		}
 	}
 
+	/** Inserts the value in the priority queue */
 	public insert(value: T) {
 		this.root = this.insertnode(this.root, value);
 	}
@@ -33,6 +36,7 @@ export class PriorityQueue<T> {
 		return node;
 	}
 
+	/** Removes the smallest value in the priority queue */
 	public popmin(): T | undefined {
 		if (!this.root) return undefined;
 		const { minnode, parent } = this.findmin(this.root, undefined);
@@ -49,6 +53,7 @@ export class PriorityQueue<T> {
 		return this.findmin(node.left, node);
 	}
 
+	/** Finds the node that satisfies the predicate in a preorder manner */
 	public find(predicate: (value: T) => boolean) {
 		return _find(this.root);
 
@@ -59,6 +64,7 @@ export class PriorityQueue<T> {
 		}
 	}
 
+	/** Checks if the queue is empty */
 	isempty() {
 		return !this.root;
 	}

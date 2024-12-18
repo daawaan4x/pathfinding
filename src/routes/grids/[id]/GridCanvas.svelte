@@ -20,6 +20,7 @@
 		const ctx = canvas.getContext("2d");
 		if (!ctx) throw new Error("Cannot get '2d' canvas context");
 
+		// Rescale canvas to screen DPI
 		rescaleCanvas({ ctx });
 
 		// Update mousexy & mousedown on mouse movements
@@ -37,6 +38,7 @@
 			if (mousedown) editPointedCell();
 		});
 
+		// Startup animation
 		requestAnimationFrame(function callback() {
 			draw(ctx);
 			requestAnimationFrame(callback);

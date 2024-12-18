@@ -1,3 +1,6 @@
+/**
+ * Helper function for coalescing "falsy" values to undefined
+ */
 export function maybe(value: unknown) {
 	// null
 	if (value === null) return undefined;

@@ -3,6 +3,9 @@ import { PriorityQueue } from "./priority-queue";
 
 type Point = readonly [number, number];
 
+/**
+ * Graph Node for a cell in the Grid
+ */
 interface Node {
 	point: Point;
 	f: number;
@@ -11,6 +14,9 @@ interface Node {
 	previous?: Node;
 }
 
+/**
+ * Incremental implementation for the A-Star Algorithm
+ */
 export class AStar {
 	constructor(
 		public readonly size: number,
@@ -32,8 +38,14 @@ export class AStar {
 	status: "no-solution" | "ongoing" | "finished" | undefined;
 	start = [0, 0] as Point;
 	end: Point;
+
+	/** Last visited node by the algorithm */
 	lastnode: Node | undefined;
+
+	/** The potential next nodes to visit in the grid */
 	openlist = new PriorityQueue<Node>((a, b) => a.f - b.f);
+
+	/** The already visited nodes in the grid */
 	closedset = new Map<string, Point>();
 
 	private serialize([x, y]: Point) {
@@ -44,10 +56,12 @@ export class AStar {
 		return ax == bx && ay == by;
 	}
 
+	/** Educated guess for how far a cell is from another cell */
 	private heuristic([ax, ay]: Point, [bx, by]: Point) {
 		return Math.sqrt((ax - bx) ** 2 + (ay - by) ** 2); // Euclidean Distance
 	}
 
+	/** Checks if a point is within-bounds and in an empty cell */
 	private isvacant([x, y]: Point) {
 		if (x < 0 || this.size <= x) return false;
 		if (y < 0 || this.size <= y) return false;
@@ -55,6 +69,7 @@ export class AStar {
 		return true;
 	}
 
+	/** Returns all the valid neighboring cells of a given cell */
 	private neighbors([x, y]: Point): Point[] {
 		const neighbors: Point[] = [
 			[x + 0, y - 1], // up
@@ -70,6 +85,7 @@ export class AStar {
 		return neighbors.filter((point) => this.isvacant(point));
 	}
 
+	/** Returns the current "shortest" path by backtracking the last visited node */
 	public currentpath() {
 		const path: Point[] = [];
 		let current = this.lastnode;
@@ -80,6 +96,7 @@ export class AStar {
 		return path;
 	}
 
+	/** Runs a single pass/iteration of the a-star algorithm */
 	public step() {
 		if (this.status == "finished" || this.status == "no-solution") return;
 
