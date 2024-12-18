@@ -2,6 +2,7 @@ import { tryJSON } from "$lib/utils/try-json";
 import type { Handle, HandleServerError } from "@sveltejs/kit";
 import { ZodError } from "zod";
 
+// eslint-disable-next-line @typescript-eslint/unbound-method
 export const handle: Handle = async ({ event, resolve }) => {
 	const response = await resolve(event);
 

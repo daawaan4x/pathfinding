@@ -1,42 +1,49 @@
-# pathfinding
+# 🗺️ pathfinding
 
-🗺️ visualize pathfinding on custom mazes | made with sveltekit 💼
+A **CRUD** application made with _SvelteKit_ for visualizing the \*A\*\* algorithm on customizable mazes. Originally made for our CS116 Project.
 
-# create-svelte
+## Setup
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+### Installation
 
-## Creating a project
+Install the latest _NodeJS_ LTS version from the [official website](https://nodejs.org/en) or through Node Version Manager: [`nvm` for Linux](https://github.com/nvm-sh/nvm), and [`nvm-win` for Windows](https://github.com/coreybutler/nvm-windows).
 
-If you're seeing this, you've probably already done this step. Congrats!
+Afterwards, install dependencies (preferably `pnpm`) with the following commands:
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
+```
+npm install -g pnpm
+pnpm install
 ```
 
-## Developing
+### Docker (for development)
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
+_Docker Compose_ is used to run necessary third-party services such as _PostgreSQL_ for development. Install _Docker Desktop_ from the [offical website](https://docs.docker.com/desktop/) to start.
 
 ```bash
-npm run build
+# start containers
+docker-compose up -d
+
+# stop containers
+docker-compose stop
+
+# delete containers (--volumes is optional if you also want to remove data volumes)
+docker-compose down --volumes
 ```
 
-You can preview the production build with `npm run preview`.
+## Development
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+### Database Migration
+
+The project lacks a Database Migration Framework for automatically syncing schemas. In order to setup the database schema for this project, a simple script can be used instead whicn can be executed with the following command.
+
+```
+pnpm vite-node "./src/lib/server/migrations/migrate"
+```
+
+### Development Server
+
+Start the development server with the following command.
+
+```
+pnpm run dev
+```

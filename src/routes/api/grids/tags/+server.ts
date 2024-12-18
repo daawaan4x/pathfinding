@@ -1,6 +1,7 @@
 import { maybe } from "$lib/utils/maybe";
-import { GridService, ReadGridTagsSchema } from "$lib/server/grid-service";
+import { GridService } from "$lib/server/grid-service";
 import { json, type RequestEvent } from "@sveltejs/kit";
+import { ReadGridTagsSchema } from "$lib/types/grid-service";
 
 /** GET tags used by the grids from the server */
 export async function GET(event: RequestEvent) {
