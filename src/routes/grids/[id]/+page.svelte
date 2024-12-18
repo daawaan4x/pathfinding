@@ -15,6 +15,7 @@
 	import { toast } from "svelte-sonner";
 	import { tryJSON } from "$lib/utils/try-json";
 	import { AStar } from "$lib/pathfinding/a-star";
+	import { baseUrl } from "../../../lib/client/base-url.client";
 
 	let { data }: { data: PageData } = $props();
 	let pointer: PointerType | undefined = $state("pen");
@@ -26,7 +27,7 @@
 		{
 			queryKey: ["grid"],
 			queryFn: async () => {
-				const url = `http://localhost:5173/api/grids/${data.id}`;
+				const url = `${baseUrl()}/api/grids/${data.id}`;
 				const response = await fetch(url);
 				const text = await response.text();
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -55,7 +56,7 @@
 			mutationFn: async () => {
 				if (!$query.data) return;
 
-				const url = `http://localhost:5173/api/grids/${data.id}`;
+				const url = `${baseUrl()}/api/grids/${data.id}`;
 				const response = await fetch(url, {
 					method: "PATCH",
 					body: JSON.stringify({
@@ -116,7 +117,7 @@
 
 <div class="relative flex min-h-screen flex-col">
 	<header class="relative flex justify-center pt-8">
-		<Button class="fixed left-4 top-4" variant="outline" on:click={() => goto("http://localhost:5173/")}>
+		<Button class="fixed left-4 top-4" variant="outline" on:click={() => goto(`${baseUrl()}/`)}>
 			<ArrowLeft size="20px" />
 			<div>Back</div>
 		</Button>

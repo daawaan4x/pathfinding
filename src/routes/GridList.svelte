@@ -10,6 +10,7 @@
 	import GridDelete from "./GridDelete.svelte";
 	import { toast } from "svelte-sonner";
 	import { tryJSON } from "$lib/utils/try-json";
+	import { baseUrl } from "$lib/client/base-url.client";
 
 	let { search = $bindable() }: { search: string } = $props();
 	let current_page = $state(1);
@@ -20,7 +21,7 @@
 		{
 			queryKey: ["grids"],
 			queryFn: async () => {
-				let url = `http://localhost:5173/api/grids?page=${current_page}&page_size=${current_page_size}`;
+				let url = `${baseUrl()}/api/grids?page=${current_page}&page_size=${current_page_size}`;
 				if (search) url += `&name=${search.toLowerCase()}`;
 				if (search) url += `&tags=${search.toLowerCase()}`;
 				const response = await fetch(url);
@@ -48,7 +49,7 @@
 	const gridsDelete = createMutation(
 		{
 			mutationFn: async (id: string) => {
-				const url = `http://localhost:5173/api/grids/${id}`;
+				const url = `${baseUrl()}/api/grids/${id}`;
 				const response = await fetch(url, { method: "DELETE" });
 				const text = await response.text();
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -68,7 +69,6 @@
 				return result;
 			},
 			onError(error) {
-				console.log(error);
 				toast.error(error.name, { description: error.message });
 			},
 			onSuccess() {
@@ -99,7 +99,7 @@
 	});
 
 	function viewGridRecord(id: string) {
-		window.open(`http://localhost:5173/grids/${id}`, "_blank");
+		window.open(`${baseUrl()}/grids/${id}`, "_blank");
 	}
 </script>
 

@@ -9,6 +9,7 @@
 	import { GridRecordSchema, type CreateGridDto } from "$lib/types/grid-service";
 	import { toast } from "svelte-sonner";
 	import { tryJSON } from "$lib/utils/try-json";
+	import { baseUrl } from "../lib/client/base-url.client";
 
 	let search = $state("");
 
@@ -16,7 +17,7 @@
 	const gridsCreate = createMutation(
 		{
 			mutationFn: async (data: CreateGridDto) => {
-				const url = `http://localhost:5173/api/grids`;
+				const url = `${baseUrl()}/api/grids`;
 				const response = await fetch(url, {
 					method: "POST",
 					body: JSON.stringify(data),
