@@ -7,10 +7,12 @@
 		data = $bindable(undefined),
 		pointer = $bindable(undefined),
 		astar = $bindable(undefined),
+		size = $bindable(600),
 	}: {
 		data?: GridRecord;
 		pointer?: PointerType;
 		astar?: AStar;
+		size?: number;
 	} = $props();
 
 	let mousexy: [number, number] | undefined = $state(undefined);
@@ -72,5 +74,5 @@
 </script>
 
 <section class="rounded-md border shadow-sm">
-	<canvas use:setup class="rounded-md {pointer ? 'cursor-pointer' : ''}" width="600" height="600"> </canvas>
+	<canvas use:setup class="rounded-md {pointer ? 'cursor-pointer' : ''}" width={size} height={size}> </canvas>
 </section>

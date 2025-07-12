@@ -3,19 +3,24 @@
 	import "../app.css";
 	import { browser } from "$app/environment";
 	import { Toaster } from "$lib/shadcn/components/ui/sonner";
-
-	const queryClient = new QueryClient({
-		defaultOptions: {
-			queries: {
-				enabled: browser,
-			},
-		},
-	});
+	import { islite } from "$lib/is-lite";
+	import Playground from "./Playground.svelte";
 </script>
 
-<QueryClientProvider client={queryClient}>
-	<slot></slot>
-</QueryClientProvider>
+{#if islite()}
+	<Playground />
+{:else}
+	<QueryClientProvider
+		client={new QueryClient({
+			defaultOptions: {
+				queries: {
+					enabled: browser,
+				},
+			},
+		})}>
+		<slot></slot>
+	</QueryClientProvider>
+{/if}
 
 <Toaster />
 
