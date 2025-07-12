@@ -5,6 +5,9 @@
 	import { Toaster } from "$lib/shadcn/components/ui/sonner";
 	import { islite } from "$lib/is-lite";
 	import Playground from "./Playground.svelte";
+	import { injectAnalytics } from "@vercel/analytics/sveltekit";
+
+	injectAnalytics();
 </script>
 
 {#if islite()}
