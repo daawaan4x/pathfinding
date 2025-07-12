@@ -5,9 +5,11 @@ runs:
   steps:
     - uses: pnpm/action-setup@v3
       with:
-        version: 8
+        version: 9
     - uses: actions/setup-node@v3
       with:
         cache: "pnpm"
     - run: pnpm install
+      shell: bash
+    - run: cp .env.example .env
       shell: bash
