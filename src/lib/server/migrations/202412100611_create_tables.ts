@@ -1,6 +1,8 @@
-import { sql } from "../sql";
+import { db } from "../db";
 
 export async function up() {
+	const sql = db();
+
 	await sql`CREATE EXTENSION "pgcrypto"`;
 
 	await sql`
@@ -20,6 +22,8 @@ export async function up() {
 }
 
 export async function down() {
+	const sql = db();
+
 	await sql`DROP TABLE IF EXISTS "grids"`;
 
 	await sql`DROP EXTENSION IF EXISTS "pgcrypto"`;

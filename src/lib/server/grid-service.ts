@@ -17,12 +17,15 @@ import {
 	type UpdateGridDto,
 } from "$lib/types/grid-service";
 import { shiftFromUTC } from "$lib/utils/shift-from-utc";
-import { sql } from "./sql";
+import { db } from "./db";
 
 /** Service for performing CRUD on the stored grids in the database */
 export class GridService {
+	constructor(private readonly sql = db()) {}
+
 	/** Inserts a grid record into the database */
 	async create(dto: CreateGridDto) {
+		const sql = this.sql;
 		const params = CreateGridSchema.parse(dto);
 		const columns = Object.keys(params) as (keyof typeof params)[];
 		const result: GridRecord[] = await sql`
@@ -35,6 +38,7 @@ export class GridService {
 
 	/** Selects and filters grid records from the database */
 	async readMany(dto: ReadManyGridDto) {
+		const sql = this.sql;
 		const params = ReadManyGridSchema.parse(dto);
 		const { page, page_size, name, size } = params;
 		const tags = [...new Set(params.tags)];
@@ -77,6 +81,7 @@ export class GridService {
 
 	/** Reads a grid record from the database */
 	async readOne(dto: ReadOneGridDto) {
+		const sql = this.sql;
 		const { id } = ReadOneGridSchema.parse(dto);
 		const result: GridRecord[] = await sql`
 			SELECT ${sql(GridRecordSchema.keyof().options)} 
@@ -89,6 +94,7 @@ export class GridService {
 
 	/** Reads current tags of grids from the database */
 	async readTags(dto: ReadGridTagsDto) {
+		const sql = this.sql;
 		const { page, page_size } = ReadGridTagsSchema.parse(dto);
 		const result: { tags: string[] }[] = await sql`
 			WITH "tags_cte" AS (
@@ -106,6 +112,7 @@ export class GridService {
 
 	/** Updates a grid record in the database */
 	async update(dto: UpdateGridDto) {
+		const sql = this.sql;
 		const { id, data } = UpdateGridSchema.parse(dto);
 		const columns = Object.keys(data) as (keyof typeof data)[];
 		const result: GridRecord[] = await sql`
@@ -120,6 +127,7 @@ export class GridService {
 
 	/** Deletes a grid record in the database */
 	async delete(dto: DeleteGridDto) {
+		const sql = this.sql;
 		const { id } = DeleteGridSchema.parse(dto);
 		const result: GridRecord[] = await sql`
 			DELETE FROM "grids"
