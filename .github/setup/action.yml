@@ -11,3 +11,5 @@ runs:
         cache: "pnpm"
     - run: pnpm install
       shell: bash
+    - run: cp .env.example .env
+      shell: bash
